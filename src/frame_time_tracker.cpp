@@ -65,7 +65,7 @@ void FrameTimeTracker::reset()
     vicon_frame_ = 0;
     depth_sensor_frame_ = 0;
 
-    starting_time_ = ros::Time::now().toNSec();
+    starting_time_ = ros::Time::now().toSec();
     vicon_frame_time_ = 0.;
     depth_senso_frame_time_ = 0.;
 }
@@ -80,12 +80,12 @@ u_int64_t FrameTimeTracker::depthSensorFrame() const
     return depth_sensor_frame_;
 }
 
-u_int64_t FrameTimeTracker::viconFrameTime() const
+double FrameTimeTracker::viconFrameTime() const
 {
     return vicon_frame_time_;
 }
 
-u_int64_t FrameTimeTracker::depthSensorFrameTime() const
+double FrameTimeTracker::depthSensorFrameTime() const
 {
     return depth_senso_frame_time_;
 }
@@ -93,26 +93,16 @@ u_int64_t FrameTimeTracker::depthSensorFrameTime() const
 void FrameTimeTracker::viconFrame(u_int64_t vicon_frame, const ros::WallTime& time)
 {
     vicon_frame_ = vicon_frame;
-    vicon_frame_time_ = time.toNSec() - starting_time_; // timeInMilliseconds();
+    vicon_frame_time_ = time.toSec() - starting_time_;
 }
 
 void FrameTimeTracker::depthSensorFrame(u_int64_t depth_sensor_frame, const ros::WallTime& time)
 {
     depth_sensor_frame_ = depth_sensor_frame;
-    depth_senso_frame_time_ = time.toNSec() - starting_time_;// timeInMilliseconds();
+    depth_senso_frame_time_ = time.toSec() - starting_time_;
 }
 
-u_int64_t FrameTimeTracker::timeInSeconds() const
+double FrameTimeTracker::timeInSeconds() const
 {
-    return timeInMilliseconds() / 1000;
-}
-
-u_int64_t FrameTimeTracker::timeInMilliseconds() const
-{
-    return timeInMicroseconds() / 1000;
-}
-
-u_int64_t FrameTimeTracker::timeInMicroseconds() const
-{
-    return (ros::WallTime::now().toNSec() - starting_time_) / 1000;
+    return (ros::WallTime::now().toSec() - starting_time_);
 }

@@ -151,7 +151,7 @@ void OniViconRecorder::recordCB(const RecordGoalConstPtr& goal)
             return;
         }
 
-        feedback.duration = frame_time_tracker_->timeInMilliseconds();
+        feedback.duration = frame_time_tracker_->timeInSeconds();
         feedback.vicon_frames = vicon_recorder_.countFrames();
         feedback.kinect_frames = oni_recorder_.countFrames();
         record_as_.publishFeedback(feedback);

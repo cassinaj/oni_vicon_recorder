@@ -65,20 +65,18 @@ public:
     u_int64_t viconFrame() const;
     u_int64_t depthSensorFrame() const;
 
-    u_int64_t viconFrameTime() const;
-    u_int64_t depthSensorFrameTime() const;
+    double viconFrameTime() const;
+    double depthSensorFrameTime() const;
 
     void viconFrame(u_int64_t vicon_frame, const ros::WallTime &time);
     void depthSensorFrame(u_int64_t depth_sensor_frame, const ros::WallTime &time);
 
-    u_int64_t timeInSeconds() const;
-    u_int64_t timeInMilliseconds() const;
-    u_int64_t timeInMicroseconds() const;
+    double timeInSeconds() const;
 
 private:
-    u_int64_t starting_time_;
-    u_int64_t vicon_frame_time_;
-    u_int64_t depth_senso_frame_time_;
+    double starting_time_;
+    double vicon_frame_time_;
+    double depth_senso_frame_time_;
 
     u_int64_t vicon_frame_;
     u_int64_t depth_sensor_frame_;

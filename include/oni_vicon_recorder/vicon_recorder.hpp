@@ -141,7 +141,7 @@ public:
     bool isRecording() const;
     void closeConnection();
 
-    std::ofstream& beginRecord(std::ofstream& ofs) const;
+    std::ofstream& beginRecord(std::ofstream& ofs);
     std::ofstream& record(std::ofstream& ofs) const;
     std::ofstream& endRecord(std::ofstream& ofs) const;
 
@@ -175,6 +175,7 @@ private:
     int float_precision_;
     bool connected_;
     bool recording_;
+    bool first_record_;
     u_int64_t frames_;
     boost::shared_mutex iteration_mutex_;
     std::ofstream ofs_;

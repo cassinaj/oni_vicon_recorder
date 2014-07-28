@@ -58,6 +58,7 @@ ViconRecorder::ViconRecorder(ros::NodeHandle& node_handle,
     float_precision_(float_precision),
     connected_(false),
     recording_(false),
+    first_record_(true),
     frames_(0),
     hostname_("localhost:801"),
     multicast_address_("244.0.0.0:44801"),
@@ -111,9 +112,12 @@ bool ViconRecorder::startRecording(const std::string& file, const std::string& o
     }
 
     object_name_ = object_name;
-
     recording_ = true;
     frames_ = 0;
+    first_record_ = true;
+
+    // write the vicon camera time offset
+    ofs_ << "0\n";
 
     ROS_INFO("Vicon data recording started");
 
@@ -202,10 +206,10 @@ void ViconRecorder::connectCB(const ConnectToViconGoalConstPtr& goal)
         if(connect_to_multicast_)
         {
             ROS_INFO("Connecting to Vicon %s, multicast %s ... ",
-                     hostname_.c_str(), goal->multicast_address.c_str());
-            connected_ = (vicon_client_.ConnectToMulticast(
-                      hostname_, multicast_address_).Result == Result::Success);
-
+                     hostname_.c_str(),
+                     goal->multicast_address.c_str());
+            connected_ = (vicon_client_.ConnectToMulticast(hostname_, multicast_address_)
+                            .Result == Result::Success);
         }
         else
         {
@@ -367,8 +371,8 @@ bool ViconRecorder::viconObjectPose(oni_vicon_recorder::ViconObjectPose::Request
 bool ViconRecorder::waitForFrame(double wait_time_in_sec)
 {
     // acquire a frame
-    ros::Rate check_rate(100);
-    int wait_time = wait_time_in_sec * 100;
+    ros::Rate check_rate(1000);
+    int wait_time = wait_time_in_sec * 1000;
     while(vicon_client_.GetFrame().Result != Result::Success && wait_time > 0)
     {
         if (--wait_time == 0)
@@ -394,8 +398,8 @@ std::set<std::string> ViconRecorder::getViconObjects()
     {
         // acquire a frame
         int wait_time = 1; // sec
-        ros::Rate check_rate(100);
-        wait_time *= 100;
+        ros::Rate check_rate(1000);
+        wait_time *= 1000;
         while(vicon_client_.GetFrame().Result != Result::Success && wait_time > 0)
         {
             if (--wait_time == 0)
@@ -498,18 +502,16 @@ bool ViconRecorder::recordFrame()
     return true;
 }
 
-std::ofstream& ViconRecorder::beginRecord(std::ofstream& ofs) const
-{
-    static bool first_record = true;
-
-    if (!first_record)
+std::ofstream& ViconRecorder::beginRecord(std::ofstream& ofs)
+{    
+    if (!first_record_)
     {
         ofs << "\n";
     }
 
-    if (first_record)
+    if (first_record_)
     {
-       first_record = false;
+       first_record_ = false;
     }
 
     ofs << std::setprecision(float_precision_);
